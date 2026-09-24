@@ -17,10 +17,10 @@ the sample and its verification target one editor version.
 `Packages/manifest.json` pins these packages:
 
 - NuGetForUnity `v4.5.0`
-- `com.zlink.stream-connector.webgl` at `framework-node/v0.23.0`
+- `com.zlink.stream-connector.webgl` at `framework-node/v0.24.0`
 - Unity UI `2.0.0`
 
-`Assets/packages.config` declares `Zlink.Stream.Connector` `0.23.0` for the Editor and native
+`Assets/packages.config` declares `Zlink.Stream.Connector` `0.24.0` for the Editor and native
 desktop/mobile/console players. If the first open reports compile errors before that package is
 present, choose **Ignore**, not Safe Mode, and run **NuGet → Restore Packages**.
 
@@ -74,9 +74,19 @@ boundaries read by the engine integration guide.
 5. Confirm that `ChatNotify` replaces the UI text. This result covers the IL2CPP reverse callback,
    UPM import, jslib linkage, and main-thread pump together.
 
-## Not verified on this machine
+## Unity 6000.0.83f1 verification
 
-This workspace has no Unity Editor or license. Only project sources, package pins, the scene
-reference, snippet markers, and the documented native/WebGL platform split were checked here.
-Editor compilation, a native player build, and the WebGL IL2CPP build require a licensed Unity
-runner.
+The licensed Editor compiled with Windows and WebGL build targets using a locally restored
+`netstandard2.1` native connector DLL. The native DLL was enabled for the Editor and Windows
+and excluded from WebGL. The Windows Mono player built in batch mode and completed the server
+lobby flow: `JoinRes` and `ChatNotify` both reported `actorId=00000003`, and the server recorded
+the client connection.
+
+The WebGL UPM package contains stable `.meta` files. Its assembly definition includes WebGL only;
+the Editor resolves the sample component through the native DLL even with the WebGL build target.
+The project also declares Unity's JSON serialization module. Using the local UPM source, the
+WebGL player built in batch mode and completed the lobby flow in headless Chromium. `JoinRes`
+reported `actorId=00000003 name=unity-player`; `ChatNotify` reported
+`actorId=00000003 name=unity-player text=hello from Unity`. The server recorded the connection.
+These checks used local connector artifacts; the manifest's pinned Git version and the published
+NuGet package have not been verified with these changes.
